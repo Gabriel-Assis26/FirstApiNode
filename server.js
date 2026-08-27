@@ -133,6 +133,19 @@ app.post('/produtos', (req, res) => {
     return res.status(201).json(newProduct);
 })
 
+app.delete('/produtos/:id', (req, res) => {
+    const id = parseInt (req.params.id)
+
+    const index = produtos.findIndex (prod => prod.id === id)
+    if (index >= 0) {
+        produtos.splice(index, 1)
+        res.json(produtos)
+    } else {
+        res.status(404).send ('Not Found')
+    }
+})
+
+
 
 const port = 3000
 app.listen (port, ()=>{
