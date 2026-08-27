@@ -139,7 +139,30 @@ app.delete('/produtos/:id', (req, res) => {
     const index = produtos.findIndex (prod => prod.id === id)
     if (index >= 0) {
         produtos.splice(index, 1)
-        res.json(produtos)
+        res.status(204).json(produtos)
+    } else {
+        res.status(404).send ('Not Found')
+    }
+})
+
+app.put('/produtos/:id', (req, res) => {
+    const id = parseInt (req.params.id)
+
+    const index = produtos.findIndex (prod => prod.id === id)
+    if (index >= 0) {
+        const { descricao, categoria, preco, estoque} = req.body;
+
+        const updateProduct = {
+          descricao,
+          categoria,
+          preco,
+          estoque
+        }
+        produtos[index] = {
+          ...produtos[index],
+          ...updateProduct
+        };
+        res.json(produtos[index])
     } else {
         res.status(404).send ('Not Found')
     }
