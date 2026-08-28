@@ -1,0 +1,442 @@
+{
+  "info": {
+    "_postman_id": "b70c5cc5-dcd2-44c0-889b-324fc830b8ad",
+    "name": "API-Produtos",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "57775865"
+  },
+  "item": [
+    {
+      "name": "01 - GET Consultar todos os produtos",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status deve ser 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Resposta deve ser um array\", function () {\r",
+              "    const dados = pm.response.json();\r",
+              "    pm.expect(dados).to.be.an(\"array\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/produtos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "produtos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "02 - GET Consultar produto existente",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status deve ser 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Produto deve possuir os atributos esperados\", function () {\r",
+              "    const produto = pm.response.json();\r",
+              "    pm.expect(produto).to.have.property(\"id\");\r",
+              "    pm.expect(produto).to.have.property(\"descricao\");\r",
+              "    pm.expect(produto).to.have.property(\"preco\");\r",
+              "    pm.expect(produto).to.have.property(\"categoria\");\r",
+              "    pm.expect(produto).to.have.property(\"estoque\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/produtos/1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "produtos",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03 - GET Consultar produto inexistente",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status deve ser 404\", function () {\r",
+              "    pm.response.to.have.status(404);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/produtos/9999999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "produtos",
+            "9999999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "04 - POST Cadastrar novo produto",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status deve ser 201\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Produto criado deve possuir os atributos esperados\", function () {\r",
+              "    const produto = pm.response.json();\r",
+              "    pm.expect(produto).to.have.property(\"id\");\r",
+              "    pm.expect(produto.descricao).to.eql(\"Teclado Mecanico RGB\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Salvar o id do produto criado\", function () {\r",
+              "    const produto = pm.response.json();\r",
+              "    pm.collectionVariables.set(\"novoProdutoId\", produto.id);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"descricao\": \"Teclado Mecanico RGB\",\r\n  \"preco\": 350.90,\r\n  \"categoria\": \"Perifericos\",\r\n  \"estoque\": 25\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/produtos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "produtos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "05 - GET Consultar produto recém-cadastrado",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status deve ser 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Dados devem corresponder ao cadastrado\", function () {\r",
+              "    const produto = pm.response.json();\r",
+              "    pm.expect(produto.descricao).to.eql(\"Teclado Mecanico RGB\");\r",
+              "    pm.expect(produto.preco).to.eql(350.90);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/produtos/{{novoProdutoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "produtos",
+            "{{novoProdutoId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "06 - PUT Alterar produto existente",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status deve ser 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Produto retornado deve refletir os novos dados\", function () {\r",
+              "    const produto = pm.response.json();\r",
+              "    pm.expect(produto.descricao).to.eql(\"Teclado Mecanico RGB - Edicao Especial\");\r",
+              "    pm.expect(produto.preco).to.eql(299.90);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"descricao\": \"Teclado Mecanico RGB - Edicao Especial\",\r\n  \"preco\": 299.90,\r\n  \"categoria\": \"Perifericos\",\r\n  \"estoque\": 18\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/produtos/{{novoProdutoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "produtos",
+            "{{novoProdutoId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "07 - GET Verificar se a alteração foi realizada",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status deve ser 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Dados devem refletir a alteracao realizada\", function () {\r",
+              "    const produto = pm.response.json();\r",
+              "    pm.expect(produto.preco).to.eql(299.90);\r",
+              "    pm.expect(produto.estoque).to.eql(18);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/produtos/{{novoProdutoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "produtos",
+            "{{novoProdutoId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "08 - PUT Tentar alterar produto inexistente",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status deve ser 404\", function () {\r",
+              "    pm.response.to.have.status(404);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"descricao\": \"Produto Fantasma\",\r\n  \"preco\": 10.00,\r\n  \"categoria\": \"Inexistente\",\r\n  \"estoque\": 0\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/produtos/9999999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "produtos",
+            "9999999"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "09 - DELETE Excluir produto existente",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status deve ser 200 ou 204\", function () {\r",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/produtos/{{novoProdutoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "produtos",
+            "{{novoProdutoId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "10 - GET Verificar que o produto excluído não existe mais",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status deve ser 404\", function () {\r",
+              "    pm.response.to.have.status(404);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/produtos/{{novoProdutoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "produtos",
+            "{{novoProdutoId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "novoProdutoId",
+      "value": ""
+    }
+  ]
+}
