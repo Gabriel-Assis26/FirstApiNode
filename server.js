@@ -98,9 +98,7 @@ function gerarId(lista) {
   return id;
 }
 
-app.get('/', (req, res) => {
-    app.use(express.static("public"));
-})
+app.use('/', express.static("public"));
 
 app.get('/produtos', (req, res) => {
     res.json(produtos)
