@@ -99,7 +99,7 @@ function gerarId(lista) {
 }
 
 app.get('/', (req, res) => {
-    res.send (`Olá estranho.`)
+    app.use(express.static("public"));
 })
 
 app.get('/produtos', (req, res) => {
