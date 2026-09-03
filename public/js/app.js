@@ -9,6 +9,18 @@ async function getProducts(query=''){
     }
 }
 
+async function delProduct(id) {
+    try {
+        const response = await fetch(`produtos/${id}`, {
+            method: 'DELETE'
+        })
+        window.location.reload();
+        return response;
+    } catch (error) {
+        console.log('Erro:', error);
+    }
+}
+
 function createCard(product) {
     const card = document.createElement('div');
     card.classList.add('card');
@@ -32,6 +44,8 @@ async function init() {
     const showProducts = document.getElementById('showProducts')
     await products.forEach(p => {
         showProducts.appendChild(createCard(p))
+        const btnDel = document.getElementById(`btnDel${p.id}`)
+        btnDel.addEventListener('click', ()=>delProduct(p.id))
     });
 }
 
