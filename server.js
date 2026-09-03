@@ -98,9 +98,15 @@ function gerarId(lista) {
   return id;
 }
 
-app.get('/', (req, res) => {
-    app.use(express.static("public"));
-})
+app.use('/', express.static("public"));
+
+app.get('/editProduct', (req, res) => {
+    res.sendFile(__dirname + '/public/editProduct.html');
+});
+
+app.get('/editProduct/:id', (req, res) => {
+    res.sendFile(__dirname + '/public/editProduct.html');
+});
 
 app.get('/produtos', (req, res) => {
     res.json(produtos)

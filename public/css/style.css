@@ -1,0 +1,97 @@
+body {
+    background: #1a1a2e;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 30px;
+    color: white;
+}
+
+#showProducts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: #252547;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transition: 0.3s;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.card-title {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #4fc3f7;
+}
+
+.card-text {
+    margin: 8px 0;
+    color: #dcdcdc;
+}
+
+.card-text:nth-child(3) {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.card-body:last-child {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-del,
+.btn-put {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-del {
+    background: #e53935;
+    color: white;
+}
+
+.btn-del:hover {
+    background: #c62828;
+}
+
+.btn-put {
+    background: #2196f3;
+    color: white;
+}
+
+.btn-put:hover {
+    background: #1976d2;
+}
+
+#btnPost {
+    width: 100%;
+    padding: 13px;
+
+    margin-top: 5px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #2196f3;
+    color: white;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
