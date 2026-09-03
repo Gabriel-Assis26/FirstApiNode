@@ -46,7 +46,13 @@ async function init() {
         showProducts.appendChild(createCard(p))
         const btnDel = document.getElementById(`btnDel${p.id}`)
         btnDel.addEventListener('click', ()=>delProduct(p.id))
+        const btnPut = document.getElementById(`btnPut${p.id}`)
+        btnPut.addEventListener('click', ()=>
+            window.location.href = `editProduct/${p.id}`)
     });
+    const btnPost = document.getElementById(`btnPost`)
+        btnPost.addEventListener('click', ()=>
+            window.location.href = `editProduct`)
 }
 
 init()

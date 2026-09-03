@@ -8,6 +8,33 @@ async function getProducts(query=''){
     }
 }
 
+async function postProducts(form){
+    try {
+        const data = new FormData(form);
+        const descricao = data.get("descricao");
+        const categoria = data.get("categoria");
+        const preco = data.get("preco");
+        const estoque = data.get("estoque");
+        const product = {
+            descricao,
+            categoria,
+            preco,
+            estoque
+        }
+        
+        const response = await fetch(`/produtos`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(product)
+        });
+        return response;
+    } catch (error) {
+        console.log('Erro:', error);
+    }
+}
+
 async function putProducts(id, form){
     try {
         const data = new FormData(form);
@@ -45,12 +72,15 @@ function showDataProduct(product) {
 async function init() {
     const path = window.location.pathname;
     const getId = path.split('/').pop();
-    const titulo = document.getElementById('titulo');
-    titulo.innerText = getId ? "Editar Produto" : "Cadastrar Produto";
-    if (getId == null) {
+    if (getId == 'editProduct') {
+        const titulo = document.getElementById('titulo');
+        titulo.innerText = "Cadastrar Produto";
         const form = document.getElementById('formProduct');
         form.addEventListener("submit", async (e) => {
-            
+            e.preventDefault();
+            await postProducts(form);
+            alert('Produto Criado!');
+            window.location.href = '/';
         });
     } else {
         const product = await getProducts(`/produtos/${getId}`);
@@ -59,7 +89,7 @@ async function init() {
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
             await putProducts(getId, form);
-            alert('Posto Atualizado!');
+            alert('Produto Atualizado!');
             window.location.href = '/';
         });
     }
