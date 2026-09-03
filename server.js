@@ -100,6 +100,10 @@ function gerarId(lista) {
 
 app.use('/', express.static("public"));
 
+app.get('/editProduct/:id', (req, res) => {
+    res.sendFile(__dirname + '/public/editProduct.html');
+});
+
 app.get('/produtos', (req, res) => {
     res.json(produtos)
 })
