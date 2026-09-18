@@ -130,9 +130,9 @@ app.get('/produtos', (req, res) => {
     res.json(produtos)
 })
 
-app.get('/login', (req, res) => {
+/* app.get('/login', (req, res) => {
     res.json(usuarios)
-})
+}) */
 
 app.get('/produtos/:id', (req, res) => {
     const id = parseInt (req.params.id)
@@ -144,6 +144,28 @@ app.get('/produtos/:id', (req, res) => {
         res.status(404).send ('Not Found')
     }
 })
+
+app.get("/usuario", (req, res) => {
+    const usuarioId = req.cookies.usuario;
+    if (!usuarioId) {
+        return res.status(401).json({
+            mensagem: "Usuário não autenticado"
+        });
+    }
+    const usuario = usuarios.find(
+        u => u.id === Number(usuarioId)
+    );
+    if (!usuario) {
+        return res.status(401).json({
+            mensagem: "Usuário inválido"
+        });
+    }
+    res.json({
+        id: usuario.id,
+        nome: usuario.nome,
+        login: usuario.login
+    });
+});
 
 app.post('/produtos', (req, res) => {
     const id = gerarId(produtos);
@@ -175,7 +197,15 @@ app.post("/login", (req, res) => {
         httpOnly: false
     });
     res.json({
-        mensagem: "Login realizado com sucesso"
+        mensagem: "Login realizado com sucesso",
+        login: true
+    });
+});
+
+app.post("/logout", (req, res) => {
+    res.clearCookie("usuario");
+    res.json({
+        mensagem: "Logout realizado"
     });
 });
 

@@ -19,6 +19,9 @@ async function init() {
             const dados = await resposta.json();
             document.getElementById("mensagem").textContent =
                 dados.mensagem;
+            if (dados.login) {
+                window.location.href = "/";
+            }
         });
 }
 
