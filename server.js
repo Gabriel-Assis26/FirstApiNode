@@ -1,6 +1,11 @@
-const express = require ('express');
-const app = express ();
+const express = require("express");
+const cookieParser = require("cookie-parser");
+
+const app = express();
+
 app.use(express.json());
+app.use(cookieParser());
+app.use(express.static("public"));
 
 const produtos = [
   {
@@ -89,6 +94,21 @@ const produtos = [
   }
 ]
 
+const usuarios = [
+    {
+        id: 1,
+        nome: "Ana Silva",
+        login: "ana",
+        senha: "123"
+    },
+    {
+        id: 2,
+        nome: "Carlos Souza",
+        login: "carlos",
+        senha: "456"
+    }
+];
+
 function gerarId(lista) {
   let id = 1;
   while (lista.some(item => item.id === id)) {
@@ -97,8 +117,6 @@ function gerarId(lista) {
 
   return id;
 }
-
-app.use('/', express.static("public"));
 
 app.get('/editProduct', (req, res) => {
     res.sendFile(__dirname + '/public/editProduct.html');
@@ -110,6 +128,10 @@ app.get('/editProduct/:id', (req, res) => {
 
 app.get('/produtos', (req, res) => {
     res.json(produtos)
+})
+
+app.get('/login', (req, res) => {
+    res.json(usuarios)
 })
 
 app.get('/produtos/:id', (req, res) => {
@@ -138,6 +160,24 @@ app.post('/produtos', (req, res) => {
     produtos.push(newProduct);
     return res.status(201).json(newProduct);
 })
+
+app.post("/login", (req, res) => {
+    const { login, senha } = req.body;
+    const usuario = usuarios.find(
+        u => u.login === login && u.senha === senha
+    );
+    if (!usuario) {
+        return res.status(401).json({
+            mensagem: "Login ou senha inválidos"
+        });
+    }
+    res.cookie("usuario", usuario.id.toString(), {
+        httpOnly: false
+    });
+    res.json({
+        mensagem: "Login realizado com sucesso"
+    });
+});
 
 app.delete('/produtos/:id', (req, res) => {
     const id = parseInt (req.params.id)
