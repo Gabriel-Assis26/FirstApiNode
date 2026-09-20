@@ -39,7 +39,23 @@ function createCard(product) {
     return card;
 }
 
+async function carregarUsuario() {
+    const resposta = await fetch("/usuario");
+    if (resposta.status === 401) {
+        window.location.href = "/login.html";
+        return;
+    }
+    const usuario = await resposta.json();
+    document.getElementById("usuario").textContent =
+        `Olá, ${usuario.nome}`;
+}
+
+
 async function init() {
+    document.addEventListener("DOMContentLoaded", () => {
+        carregarUsuario();
+    });
+    
     const products = await getProducts('/produtos');
     const showProducts = document.getElementById('showProducts')
     await products.forEach(p => {
@@ -50,6 +66,16 @@ async function init() {
         btnPut.addEventListener('click', ()=>
             window.location.href = `editProduct/${p.id}`)
     });
+    document
+        .getElementById("logout")
+        .addEventListener("click", async () => {
+
+            await fetch("/logout", {
+                method: "POST"
+            });
+
+            window.location.href = "/";
+        });
     const btnPost = document.getElementById(`btnPost`)
         btnPost.addEventListener('click', ()=>
             window.location.href = `editProduct`)

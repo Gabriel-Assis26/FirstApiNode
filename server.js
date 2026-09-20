@@ -1,6 +1,13 @@
-const express = require ('express');
-const app = express ();
+const express = require("express");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = "batata";
+
+const app = express();
+
 app.use(express.json());
+app.use(cookieParser());
+app.use(express.static("public"));
 
 const produtos = [
   {
@@ -89,6 +96,21 @@ const produtos = [
   }
 ]
 
+const usuarios = [
+    {
+        id: 1,
+        nome: "Ana Silva",
+        login: "ana",
+        senha: "123"
+    },
+    {
+        id: 2,
+        nome: "Carlos Souza",
+        login: "carlos",
+        senha: "456"
+    }
+];
+
 function gerarId(lista) {
   let id = 1;
   while (lista.some(item => item.id === id)) {
@@ -98,7 +120,27 @@ function gerarId(lista) {
   return id;
 }
 
-app.use('/', express.static("public"));
+function autenticar(req, res, next) {
+
+    const token = req.cookies.token;
+    if (!token) {
+        return res.status(401).json({
+            mensagem: "Não autenticado"
+        });
+    }
+    try {
+        const dados = jwt.verify(
+            token,
+            JWT_SECRET
+        );
+        req.usuario = dados;
+        next();
+    } catch (erro) {
+        return res.status(401).json({
+            mensagem: "Token inválido ou expirado"
+        });
+    }
+}
 
 app.get('/editProduct', (req, res) => {
     res.sendFile(__dirname + '/public/editProduct.html');
@@ -112,6 +154,10 @@ app.get('/produtos', (req, res) => {
     res.json(produtos)
 })
 
+/* app.get('/login', (req, res) => {
+    res.json(usuarios)
+}) */
+
 app.get('/produtos/:id', (req, res) => {
     const id = parseInt (req.params.id)
 
@@ -122,6 +168,38 @@ app.get('/produtos/:id', (req, res) => {
         res.status(404).send ('Not Found')
     }
 })
+
+/* app.get("/usuario", (req, res) => {
+    const usuarioId = req.cookies.usuario;
+    if (!usuarioId) {
+        return res.status(401).json({
+            mensagem: "Usuário não autenticado"
+        });
+    }
+    const usuario = usuarios.find(
+        u => u.id === Number(usuarioId)
+    );
+    if (!usuario) {
+        return res.status(401).json({
+            mensagem: "Usuário inválido"
+        });
+    }
+    res.json({
+        id: usuario.id,
+        nome: usuario.nome,
+        login: usuario.login
+    });
+}); */
+
+app.get("/usuario", autenticar, (req, res) => {
+
+    res.json({
+        id: req.usuario.id,
+        nome: req.usuario.nome,
+        login: req.usuario.login
+    });
+
+});
 
 app.post('/produtos', (req, res) => {
     const id = gerarId(produtos);
@@ -138,6 +216,57 @@ app.post('/produtos', (req, res) => {
     produtos.push(newProduct);
     return res.status(201).json(newProduct);
 })
+
+app.post("/login", (req, res) => {
+    const { login, senha } = req.body;
+    const usuario = usuarios.find(
+        u => u.login === login && u.senha === senha
+    );
+    if (!usuario) {
+        return res.status(401).json({
+            mensagem: "Login ou senha inválidos"
+        });
+    }
+    /* res.cookie("usuario", usuario.id.toString(), {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: false
+    }); */
+    const token = jwt.sign(
+        {
+            id: usuario.id,
+            nome: usuario.nome,
+            login: usuario.login
+        },
+        JWT_SECRET,
+        {
+            expiresIn: "18m"
+        }
+    );
+    
+    res.cookie("token", token, {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: false,
+        maxAge: 30 * 60 * 1000
+    });
+    res.json({
+        mensagem: "Login realizado com sucesso",
+        login: true
+    });
+});
+
+app.post("/logout", (req, res) => {
+    /* res.clearCookie("usuario");
+    res.json({
+        mensagem: "Logout realizado"
+    }); */
+
+    res.clearCookie("token");
+    res.json({
+        mensagem: "Logout realizado"
+    });
+});
 
 app.delete('/produtos/:id', (req, res) => {
     const id = parseInt (req.params.id)
