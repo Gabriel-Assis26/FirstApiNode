@@ -69,7 +69,19 @@ function showDataProduct(product) {
     document.getElementById('estoque').value = product.estoque;
 }
 
+async function carregarUsuario() {
+    const resposta = await fetch("/usuario");
+    if (resposta.status === 401) {
+        window.location.href = "/login.html";
+        return;
+    }
+}
+
 async function init() {
+    document.addEventListener("DOMContentLoaded", () => {
+        carregarUsuario();
+    });
+
     const path = window.location.pathname;
     const getId = path.split('/').pop();
     if (getId == 'editProduct') {

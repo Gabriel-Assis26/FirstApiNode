@@ -1,5 +1,7 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = "batata";
 
 const app = express();
 
@@ -118,6 +120,28 @@ function gerarId(lista) {
   return id;
 }
 
+function autenticar(req, res, next) {
+
+    const token = req.cookies.token;
+    if (!token) {
+        return res.status(401).json({
+            mensagem: "Não autenticado"
+        });
+    }
+    try {
+        const dados = jwt.verify(
+            token,
+            JWT_SECRET
+        );
+        req.usuario = dados;
+        next();
+    } catch (erro) {
+        return res.status(401).json({
+            mensagem: "Token inválido ou expirado"
+        });
+    }
+}
+
 app.get('/editProduct', (req, res) => {
     res.sendFile(__dirname + '/public/editProduct.html');
 });
@@ -145,7 +169,7 @@ app.get('/produtos/:id', (req, res) => {
     }
 })
 
-app.get("/usuario", (req, res) => {
+/* app.get("/usuario", (req, res) => {
     const usuarioId = req.cookies.usuario;
     if (!usuarioId) {
         return res.status(401).json({
@@ -165,6 +189,16 @@ app.get("/usuario", (req, res) => {
         nome: usuario.nome,
         login: usuario.login
     });
+}); */
+
+app.get("/usuario", autenticar, (req, res) => {
+
+    res.json({
+        id: req.usuario.id,
+        nome: req.usuario.nome,
+        login: req.usuario.login
+    });
+
 });
 
 app.post('/produtos', (req, res) => {
@@ -193,8 +227,28 @@ app.post("/login", (req, res) => {
             mensagem: "Login ou senha inválidos"
         });
     }
-    res.cookie("usuario", usuario.id.toString(), {
-        httpOnly: false
+    /* res.cookie("usuario", usuario.id.toString(), {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: false
+    }); */
+    const token = jwt.sign(
+        {
+            id: usuario.id,
+            nome: usuario.nome,
+            login: usuario.login
+        },
+        JWT_SECRET,
+        {
+            expiresIn: "18m"
+        }
+    );
+    
+    res.cookie("token", token, {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: false,
+        maxAge: 30 * 60 * 1000
     });
     res.json({
         mensagem: "Login realizado com sucesso",
@@ -203,7 +257,12 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-    res.clearCookie("usuario");
+    /* res.clearCookie("usuario");
+    res.json({
+        mensagem: "Logout realizado"
+    }); */
+
+    res.clearCookie("token");
     res.json({
         mensagem: "Logout realizado"
     });
